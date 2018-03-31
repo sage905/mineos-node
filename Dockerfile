@@ -3,8 +3,7 @@ MAINTAINER Sage905 <sage905@takeflight.ca>
 USER root
 
 ## RHEL/CentOS 7 64-Bit ##
-wget http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-rpm -ivh epel-release-latest-7.noarch.rpm
+rpm -Uvh http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
 #update and accept all prompts
 # Update image
