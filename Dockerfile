@@ -9,7 +9,7 @@ RUN rpm -Uvh http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.r
 # Update image
 RUN yum repolist --disablerepo=* && \
     yum-config-manager --disable \* > /dev/null && \
-    yum-config-manager --enable rhel-7-server-rpms > /dev/null
+    yum-config-manager --enable rhel-7-server-rpms --enable rhel-7-server-extras-rpms --enable epel > /dev/null
 RUN yum update -y
 RUN yum install -y\
   supervisor \
