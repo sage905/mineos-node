@@ -2,6 +2,10 @@ FROM registry.access.redhat.com/rhscl/nodejs-4-rhel7
 MAINTAINER Sage905 <sage905@takeflight.ca>
 USER root
 
+## RHEL/CentOS 7 64-Bit ##
+wget http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+rpm -ivh epel-release-latest-7.noarch.rpm
+
 #update and accept all prompts
 # Update image
 RUN yum repolist --disablerepo=* && \
@@ -17,9 +21,6 @@ RUN yum install -y\
   curl \
   rlwrap
 
-## RHEL/CentOS 7 64-Bit ##
-wget http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-rpm -ivh epel-release-latest-7.noarch.rpm
 
 #install node from nodesource
 #RUN curl --silent --location https://rpm.nodesource.com/setup_4.x | bash -
