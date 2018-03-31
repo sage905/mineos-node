@@ -1,25 +1,25 @@
-FROM debian:jessie
-MAINTAINER William Dizon <wdchromium@gmail.com>
-
-#add testing repository for OpenJDK8
-RUN echo "deb http://http.debian.net/debian jessie-backports main" >> /etc/apt/sources.list
+FROM registry.access.redhat.com/rhscl/nodejs-4-rhel7
+MAINTAINER Sage905 <sage905@takeflight.ca>
+USER root
 
 #update and accept all prompts
-RUN apt-get update && apt-get install -y \
+# Update image
+RUN yum repolist --disablerepo=* && \
+    yum-config-manager --disable \* > /dev/null && \
+    yum-config-manager --enable rhel-7-server-rpms > /dev/null
+RUN yum update -y \
+RUN yum install\
   supervisor \
   rdiff-backup \
   screen \
   rsync \
   git \
   curl \
-  rlwrap \
-  && apt-get install -y -t jessie-backports openjdk-8-jre-headless ca-certificates-java \
-  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+  rlwrap
 
 #install node from nodesource
-RUN curl https://deb.nodesource.com/node_4.x/pool/main/n/nodejs/nodejs_4.6.2-1nodesource1~jessie1_amd64.deb > node.deb \
- && dpkg -i node.deb \
- && rm node.deb
+#RUN curl --silent --location https://rpm.nodesource.com/setup_4.x | bash -
+#RUN yum -y install nodejs
 
 #download mineos from github
 RUN mkdir /usr/games/minecraft \
@@ -30,13 +30,10 @@ RUN mkdir /usr/games/minecraft \
 
 #build npm deps and clean up apt for image minimalization
 RUN cd /usr/games/minecraft \
-  && apt-get update \
-  && apt-get install -y build-essential \
+  && yum groupinstall 'Development Tools'\
   && npm install \
-  && apt-get remove --purge -y build-essential \
-  && apt-get autoremove -y \
-  && apt-get clean \
-  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+  && yum groupremove 'Development Tools' \
+  && yum clean all\
 
 #configure and run supervisor
 RUN cp /usr/games/minecraft/init/supervisor_conf /etc/supervisor/conf.d/mineos.conf
