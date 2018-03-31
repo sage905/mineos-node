@@ -17,6 +17,10 @@ RUN yum install\
   curl \
   rlwrap
 
+## RHEL/CentOS 7 64-Bit ##
+wget http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+rpm -ivh epel-release-latest-7.noarch.rpm
+
 #install node from nodesource
 #RUN curl --silent --location https://rpm.nodesource.com/setup_4.x | bash -
 #RUN yum -y install nodejs
