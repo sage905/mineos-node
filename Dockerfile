@@ -34,9 +34,9 @@ RUN mkdir /usr/games/minecraft \
 
 #build npm deps and clean up apt for image minimalization
 RUN cd /usr/games/minecraft \
-  && yum groupinstall 'Development Tools'\
+  && yum groupinstall -y 'Development Tools'\
   && npm install \
-  && yum groupremove 'Development Tools' \
+  && yum groupremove -y 'Development Tools' \
   && yum clean all\
 
 #configure and run supervisor
