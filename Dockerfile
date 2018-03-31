@@ -7,7 +7,7 @@ USER root
 RUN yum repolist --disablerepo=* && \
     yum-config-manager --disable \* > /dev/null && \
     yum-config-manager --enable rhel-7-server-rpms > /dev/null
-RUN yum update -y \
+RUN yum update -y
 RUN yum install\
   supervisor \
   rdiff-backup \
