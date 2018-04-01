@@ -40,7 +40,6 @@ RUN cd /usr/games/minecraft \
 
 # configure and run systemctl
 RUN cp /usr/games/minecraft/init/systemd_conf /etc/systemd/system/mineos.service
-CMD ["/bin/systemctl", "enable", "mineos"]
 CMD ["/bin/systemctl", "start", "mineos"]
 
 #entrypoint allowing for setting of mc password
