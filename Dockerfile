@@ -12,7 +12,6 @@ RUN yum repolist --disablerepo=* && \
     yum-config-manager --enable rhel-7-server-rpms --enable rhel-7-server-extras-rpms --enable epel > /dev/null
 RUN yum update -y
 RUN yum install -y\
-  supervisor \
   rdiff-backup \
   screen \
   rsync \
@@ -39,9 +38,10 @@ RUN cd /usr/games/minecraft \
   && yum groupremove -y 'Development Tools' \
   && yum clean all\
 
-#configure and run supervisor
-RUN cp /usr/games/minecraft/init/supervisor_conf /etc/supervisor/conf.d/mineos.conf
-CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]
+# configure and run systemctl
+RUN cp /usr/games/minecraft/init/systemd_conf /etc/systemd/system/mineos.service
+CMD ["/bin/systemctl", "enable", "mineos"]
+CMD ["/bin/systemctl", "start", "mineos"]
 
 #entrypoint allowing for setting of mc password
 COPY entrypoint.sh /entrypoint.sh
