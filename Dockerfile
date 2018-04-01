@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/rhscl/nodejs-4-rhel7
+FROM registry.access.redhat.com/rhel
 MAINTAINER Sage905 <sage905@takeflight.ca>
 USER root
 
@@ -21,8 +21,8 @@ RUN yum install -y\
 
 
 #install node from nodesource
-#RUN curl --silent --location https://rpm.nodesource.com/setup_4.x | bash -
-#RUN yum -y install nodejs
+RUN curl --silent --location https://rpm.nodesource.com/setup_4.x | bash -
+RUN yum -y install nodejs
 
 #download mineos from github
 RUN mkdir /usr/games/minecraft \
@@ -36,7 +36,7 @@ RUN cd /usr/games/minecraft \
   && yum groupinstall -y 'Development Tools'\
   && npm install \
   && yum groupremove -y 'Development Tools' \
-  && yum clean all\
+  && yum clean all
 
 # configure and run systemctl
 RUN cp /usr/games/minecraft/init/systemd_conf /etc/systemd/system/mineos.service
