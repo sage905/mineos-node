@@ -20,7 +20,7 @@ Do not install this atop an existing MineOS system (using the Python-based webui
 
 Using an apt-get based Linux distribution:
 
-    curl -sL https://deb.nodesource.com/setup_4.x | bash -
+    curl -sL https://deb.nodesource.com/setup_8.x | bash -
     apt-get update
     apt-get install -y nodejs git rdiff-backup screen build-essential openjdk-8-jre-headless
     mkdir -p /usr/games
@@ -29,6 +29,7 @@ Using an apt-get based Linux distribution:
     cd minecraft
     chmod +x generate-sslcert.sh
     ./generate-sslcert.sh
+    cp mineos.conf /etc/mineos.conf
     npm install
     
 For hosts using 'upstart':
