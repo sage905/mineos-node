@@ -97,55 +97,50 @@ auth.authenticate_shadow = function(user, plaintext, callback) {
 }
 
 auth.test_membership = function(username, group, callback) {
-  var passwd = require('etc-passwd');
+  var getent = require('@opendrives/getent');
   var userid = require('userid');
 
   var membership_valid = false;
-  var gg = passwd.getGroups()
-    .on('group', function(group_data) {
-      if (group == group_data.groupname)
-        try {
-          if (group_data.users.indexOf(username) >= 0 || group_data.gid == userid.gid(username)) 
-            membership_valid = true;
-        } catch (e) {}
-    })
-    .on('end', function() {
-      callback(membership_valid);
-    })
+  var gg = getent.group();
+  gg.forEach((group_data) => {
+      if (group == group_data.name)
+      try {
+        if (userid.gids(username).includes(group_data.gid))
+          membership_valid = true;
+      } catch (e) {}
+  })
+  callback(membership_valid);
+      
 }
 
 auth.verify_ids = function(uid, gid, callback) {
-  var passwd = require('etc-passwd');
+  var passwd = require('@opendrives/getent');
 
   var uid_present = false;
   var gid_present = false;
 
   async.series([
     function(cb) {
-      var gg = passwd.getUsers()
-        .on('user', function(user_data) {
+      var gu = getent.passwd()
+        gu.forEach((user_data) => {
           if (user_data.uid == uid)
             uid_present = true;
         })
-        .on('end', function() {
-          if (!uid_present)
-            cb('UID ' + uid + ' does not exist on this system');
-          else
-            cb();
-        })
+        if (!uid_present)
+          cb('UID ' + uid + ' does not exist on this system');
+        else
+          cb();
     },
     function(cb) {
-      var gg = passwd.getGroups()
-        .on('group', function(group_data) {
+      var gg = getent.group();
+        gg.forEach((group_data) => {
           if (group_data.gid == gid)
             gid_present = true;
         })
-        .on('end', function() {
-          if (!gid_present)
-            cb('GID ' + gid + ' does not exist on this system');
-          else
-            cb();
-        })
+        if (!gid_present)
+          cb('GID ' + gid + ' does not exist on this system');
+        else
+          cb();
     }
   ], callback)
 }

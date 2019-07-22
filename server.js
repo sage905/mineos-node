@@ -582,38 +582,35 @@ server.backend = function(base_dir, socket_emitter, user_config) {
     }
 
     self.send_user_list = function() {
-      var passwd = require('etc-passwd');
+      // var passwd = require('etc-passwd');
+      var getent = require('@opendrives/getent');
       var users = [];
       var groups = [];
 
-      var gu = passwd.getUsers()
-        .on('user', function(user_data) {
-          if (user_data.username == username)
-            users.push({
-              username: user_data.username,
-              uid: user_data.uid,
-              gid: user_data.gid,
-              home: user_data.home
-            })
+      var gu = getent.passwd(username);
+      gu.forEach((user_data) =>
+        users.push({
+          username: user_data.name,
+          uid: user_data.uid,
+          gid: user_data.gid,
+          home: user_data.dir
         })
-        .on('end', function() {
-          socket.emit('user_list', users);
-        })
+      );
+      socket.emit('user_list', users);
 
-      var gg = passwd.getGroups()
-        .on('group', function(group_data) {
-          if (group_data.users.indexOf(username) >= 0 || group_data.gid == userid.gid(username)) {
-            if (group_data.gid > 0) {
-              groups.push({
-                groupname: group_data.groupname,
-                gid: group_data.gid
-              })
-            }
+      var gg = getent.group();
+      gg.forEach((group_data) => {
+        if (userid.gids(username).includes(group_data.gid)) {
+          if (group_data.gid > 0) {
+            groups.push({
+              groupname: group_data.name,
+              gid: group_data.gid
+            })
           }
-        })
-        .on('end', function() {
-          socket.emit('group_list', groups);
-        })
+        }
+      }
+      );
+      socket.emit('group_list', groups);
     }
 
     logging.info('[WEBUI] {0} connected from {1}'.format(username, ip_address));
