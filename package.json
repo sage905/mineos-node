@@ -21,6 +21,7 @@
     "start": "node webui.js"
   },
   "dependencies": {
+    "@opendrives/getent": "^0.3.0",
     "adm-zip": "^0.4.11",
     "angular": "1.4.x",
     "angular-moment": "1.0.x",

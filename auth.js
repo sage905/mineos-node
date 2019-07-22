@@ -114,7 +114,7 @@ auth.test_membership = function(username, group, callback) {
 }
 
 auth.verify_ids = function(uid, gid, callback) {
-  var passwd = require('@opendrives/getent');
+  var getent = require('@opendrives/getent');
 
   var uid_present = false;
   var gid_present = false;
