@@ -230,12 +230,12 @@ server.backend = function(base_dir, socket_emitter, user_config) {
               }
             ], function(err, output) {
               if (err || typeof output == 'undefined')
-                logging.error("Unable to retrieve profile: {0}. Please check your internet connectivity.".format(key));
+                logging.error("Unable to retrieve profile: {0}. The definition for this profile may be improperly formed or is pointing to an invalid URI.".format(key));
               else {
                 logging.info("Downloaded information for collection: {0} ({1} entries)".format(collection.name, output.length));
                 profiles = profiles.concat(output);
               }
-              outer_cb(err);
+              outer_cb();
             }); //end waterfall
           } else { //for profiles like paperspigot which are hardcoded
             async.waterfall([
@@ -244,12 +244,12 @@ server.backend = function(base_dir, socket_emitter, user_config) {
               }
             ], function(err, output) {
               if (err || typeof output == 'undefined')
-                logging.error("Unable to retrieve profile: {0}. Please check your internet connectivity.".format(key));
+                logging.error("Unable to retrieve profile: {0}. The definition for this profile may be improperly formed or is pointing to an invalid URI.".format(key));
               else {
                 logging.info("Downloaded information for collection: {0} ({1} entries)".format(collection.name, output.length));
                 profiles = profiles.concat(output);
               }
-              outer_cb(err);
+              outer_cb();
             }); //end waterfall
           }
         },
@@ -310,7 +310,7 @@ server.backend = function(base_dir, socket_emitter, user_config) {
 
     var OWNER_CREDS = {
       uid: userid.uid(username),
-      gid: userid.gid(username)
+      gid: userid.gids(username)[0]
     }
 
     function webui_dispatcher (args) {
@@ -446,7 +446,7 @@ server.backend = function(base_dir, socket_emitter, user_config) {
             async.apply(fs.copy, bt_path, dest_path),
             function(cb) {
               var binary = which.sync('java');
-              var proc = child_process.spawn(binary, ['-jar', dest_path, '--rev', args.version], params);
+              var proc = child_process.spawn(binary, ['-Xms512M', '-jar', dest_path, '--rev', args.version], params);
 
               proc.stdout.on('data', function (data) {
                 self.front_end.emit('build_jar_output', data.toString());
@@ -777,7 +777,10 @@ function server_container(server_name, user_config, socket_io) {
   intervals['heartbeat'] = setInterval(heartbeat, HEARTBEAT_INTERVAL_MS);
 
   function heartbeat() {
-    async.series({
+    clearInterval(intervals['heartbeat']);
+    intervals['heartbeat'] = setInterval(heartbeat, HEARTBEAT_INTERVAL_MS * 3);
+
+    async.parallel({
       'up': function(cb) { instance.property('up', function(err, is_up) { cb(null, is_up) }) },
       'memory': function(cb) { instance.property('memory', function(err, mem) { cb(null, err ? {} : mem) }) },
       'ping': function(cb) {
@@ -797,6 +800,9 @@ function server_container(server_name, user_config, socket_io) {
         })
       }
     }, function(err, retval) {
+      clearInterval(intervals['heartbeat']);
+      intervals['heartbeat'] = setInterval(heartbeat, HEARTBEAT_INTERVAL_MS);
+
       nsp.emit('heartbeat', {
         'server_name': server_name,
         'timestamp': Date.now(),
